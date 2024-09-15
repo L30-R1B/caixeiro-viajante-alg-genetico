@@ -7,17 +7,18 @@
 #include "../include/mapa.h"
 #include "../include/percurso.h"
 
-int encontra_menor_divisor(int num){
-    if(num == 1){
-        return 1;
+int encontra_menor_divisor(int num) {
+    if (num <= 1) {
+        return num;
     }
-    for(int i = 2; i < num/2 ; i ++){
-        if(num % i == 0){
+    for (int i = 2; i * i <= num; i++) {
+        if (num % i == 0) {
             return i;
         }
     }
     return num;
 }
+
 
 Percurso *cria_percurso(){
     Percurso *Per = (Percurso*) malloc(sizeof(Percurso));
@@ -55,35 +56,33 @@ void printa_vetor(int *v, int tam){
     printf("\n");
 }
 
-void percorre(Individuo *I, int **matriz, int qtd_genes, int ini){
-
+void percorre(Individuo *I, int **matriz, int qtd_genes, int ini) {
     int aux[qtd_genes];
     int indice = pesquisa_valor(I->genes, qtd_genes, ini);
-    int i = 0;
 
-    for(int j = indice; j < qtd_genes; j ++){
-        aux[i] = I->genes[j];
-        i ++;
-    }
-    for(int j = 0; j < indice; j ++){
-        aux[i] = I->genes[j];
-        i ++;
+    // Copia e rearranja os genes em um buffer temporário
+    for (int i = 0; i < qtd_genes; i++) {
+        aux[i] = I->genes[(indice + i) % qtd_genes];
     }
 
-    for(int i = 0; i < (qtd_genes - 1); i ++){
-        I->distancia += matriz[aux[i]][aux[i + 1]];
-        I->qtd_vertices ++;
+    // Calcula a distância
+    I->distancia = 0;
+    I->qtd_vertices = 0;
+    for (int i = 0; i < qtd_genes; i++) {
+        I->distancia += matriz[aux[i]][aux[(i + 1) % qtd_genes]];
+        I->qtd_vertices++;
     }
-    I->distancia += matriz[aux[qtd_genes - 1]][aux[0]];
-    I->qtd_vertices ++;
 }
+
 
 void calcula_eficiencia(Individuo *I){
     I->eficiencia = ((I->distancia)+(I->qtd_vertices * 100.0)) / (I->qtd_vertices * 100.0);
 }
+
 void calcula_mutacao(Individuo *I){
     I->taxa_de_mutacao = 6*(100 - (100.0 * pow(2.718, -0.07 * I->eficiencia)));
 }
+
 double calcula_eficiencia_media(Populacao *P){
     double aux = 0;
     for(int i = 0; i < tam_populacao; i ++){
@@ -115,7 +114,7 @@ void treina(Percurso *Per){
     Per->P->taxa_de_cruzamento =  calcula_taxa_cruzamento(Per->P);
     Per->P->qtd_geracao ++;
     salva_melhor_individuo(Per->P);
-    recupera_individuo(Per->P);
+    recupera_melhor_individuo(Per->P);
 }
 
 void salva_melhor_individuo(Populacao *P){
@@ -142,7 +141,7 @@ void salva_melhor_individuo(Populacao *P){
     fclose(F);
 }
 
-void recupera_individuo(Populacao *P){
+void recupera_melhor_individuo(Populacao *P){
 
     FILE *F = fopen("melhor_individuo.txt", "r");
 
@@ -169,11 +168,15 @@ void realiza_mutacoes(Populacao *P, Individuo *I, double chance_de_acerto){
         return;
     }
 
+    int ind1;
+    int ind2;
+    int aux;
+
     for(int i = 0; i < rand() % 10 + 1; i ++){
-        int ind1 = rand() % P->total_vertices;
-        int ind2 = rand() % P->total_vertices;
+        ind1 = rand() % P->total_vertices;
+        ind2 = rand() % P->total_vertices;
         
-        int aux = I->genes[ind1];
+        aux = I->genes[ind1];
         I->genes[ind1] = I->genes[ind2];
         I->genes[ind2] = aux;
     }

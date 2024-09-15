@@ -26,7 +26,7 @@ double calcula_eficiencia_media(Populacao *P);
 double calcula_taxa_cruzamento(Populacao *P);
 void treina(Percurso *Per);
 void salva_melhor_individuo(Populacao *P);
-void recupera_individuo(Populacao *P);
+void recupera_melhor_individuo(Populacao *P);
 void realiza_mutacoes(Populacao *P, Individuo *I, double chance_de_acerto);
 void cruza(Populacao *P, Individuo *I1, Individuo *I2, double chance_de_acerto);
 

@@ -23,7 +23,7 @@ int main(){
     gettimeofday(&inicio, NULL);
     Percurso *Per = cria_percurso();
     if(Per->P->total_vertices <= 32)
-        gerar_grafo_PNG(Per->G, "Grafo_original.png");
+       gerar_grafo_PNG(Per->G, "Grafo_original.png");
     while(Per->P->qtd_geracao < (Per->G->qtd_vertices * qtd_geracoes)){
         treina(Per);
         if(Per->P->qtd_geracao % (qtd_geracoes/(qtd_geracoes/100000)) == 0){
